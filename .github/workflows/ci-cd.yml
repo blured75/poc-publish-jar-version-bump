@@ -60,7 +60,7 @@ jobs:
           RAW_VERSION=$(mvn -B -ntp help:evaluate -Dexpression=project.version -q -DforceStdout)
           PROPOSED_VERSION="${RAW_VERSION%-SNAPSHOT}"
           INPUT_VERSION="${{ github.event.inputs.release_version }}"
-          if [ -n "$INPUT_VERSION" ]; then
+          if [ -n "${INPUT_VERSION// /}" ]; then
             RELEASE_VERSION="$INPUT_VERSION"
           else
             RELEASE_VERSION="$PROPOSED_VERSION"
