@@ -8,12 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: "Version release (optionnelle). leave empty to use the version in pom.xml"
+        description: "Version release (optionnelle). Laisser vide pour utiliser la version dans pom.xml"
         required: false
         default: ""
-      next_snapshot_version:
-        description: "Next version for the codebase after release"
-        required: true
 
 permissions:
   contents: write
@@ -92,7 +89,14 @@ jobs:
 
       - name: Bump to next snapshot version
         run: |
-          mvn -B -ntp versions:set -DnewVersion="${{ github.event.inputs.next_snapshot_version }}-SNAPSHOT" -DgenerateBackupPoms=false
+          RELEASE_VERSION="${{ steps.release_version.outputs.release_version }}"
+          IFS='.' read -ra PARTS <<< "$RELEASE_VERSION"
+          MAJOR="${PARTS[0]}"
+          MINOR="${PARTS[1]:-0}"
+          PATCH="${PARTS[2]:-0}"
+          NEXT_PATCH=$((PATCH + 1))
+          NEXT_VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}-SNAPSHOT"
+          mvn -B -ntp versions:set -DnewVersion="${NEXT_VERSION}" -DgenerateBackupPoms=false
           git add pom.xml
-          git commit -m "chore: bump version to ${{ github.event.inputs.next_snapshot_version }}"
+          git commit -m "chore: bump version to ${NEXT_VERSION}"
           git push origin HEAD
