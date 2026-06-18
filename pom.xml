@@ -6,7 +6,7 @@
 
   <groupId>com.example</groupId>
   <artifactId>hello-cli</artifactId>
-  <version>0.8.2</version>
+  <version>0.9.10</version>
   <name>hello-cli</name>
   <description>Simple Java CLI HelloWorld</description>
 
