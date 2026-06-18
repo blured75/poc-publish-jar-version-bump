@@ -92,7 +92,7 @@ jobs:
 
       - name: Bump to next snapshot version
         run: |
-          mvn -B -ntp versions:set -DnewVersion=${{ github.event.inputs.next_snapshot_version }} -DgenerateBackupPoms=false
+          mvn -B -ntp versions:set -DnewVersion="${{ github.event.inputs.next_snapshot_version }}-SNAPSHOT" -DgenerateBackupPoms=false
           git add pom.xml
           git commit -m "chore: bump version to ${{ github.event.inputs.next_snapshot_version }}"
           git push origin HEAD
