@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: "Version release (optionnelle). Laisser vide pour proposer automatiquement project.version sans -SNAPSHOT"
+        description: "Version release (optionnelle). leave empty to use the version in pom.xml"
         required: false
         default: ""
       next_snapshot_version:
-        description: "Version suivante SNAPSHOT (ex: 0.2.0-SNAPSHOT)"
+        description: "Next version for the codebase after release"
         required: true
 
 permissions:
