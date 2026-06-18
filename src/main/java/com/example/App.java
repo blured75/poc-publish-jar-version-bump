@@ -1,10 +1,10 @@
 package com.example;
 
-public final class App {
-  private App() {
-  }
+import static java.lang.IO.println;
 
-  public static void main(String[] args) {
-    System.out.println("HelloWorld");
+class App {
+  static void main() {
+    println("Eins Zwei Drei Pozilei!");
+    println("Es ist viel besser als Go");
   }
 }
