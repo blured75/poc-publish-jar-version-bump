@@ -8,8 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: "Version release (ex: 0.1.0)"
-        required: true
+        description: "Version release (optionnelle). Laisser vide pour proposer automatiquement project.version sans -SNAPSHOT"
+        required: false
+        default: ""
       next_snapshot_version:
         description: "Version suivante SNAPSHOT (ex: 0.2.0-SNAPSHOT)"
         required: true
@@ -53,8 +54,21 @@ jobs:
           java-version: "25"
           cache: maven
 
+      - name: Compute release version from pom.xml
+        id: release_version
+        run: |
+          RAW_VERSION=$(mvn -B -ntp help:evaluate -Dexpression=project.version -q -DforceStdout)
+          PROPOSED_VERSION="${RAW_VERSION%-SNAPSHOT}"
+          INPUT_VERSION="${{ github.event.inputs.release_version }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            RELEASE_VERSION="$INPUT_VERSION"
+          else
+            RELEASE_VERSION="$PROPOSED_VERSION"
+          fi
+          echo "release_version=${RELEASE_VERSION}" >> "$GITHUB_OUTPUT"
+
       - name: Set release version in pom.xml
-        run: mvn -B -ntp versions:set -DnewVersion=${{ github.event.inputs.release_version }} -DgenerateBackupPoms=false
+        run: mvn -B -ntp versions:set -DnewVersion=${{ steps.release_version.outputs.release_version }} -DgenerateBackupPoms=false
 
       - name: Build release JAR
         run: mvn -B -ntp clean package
@@ -64,15 +78,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add pom.xml
-          git commit -m "chore(release): version ${{ github.event.inputs.release_version }}" || true
-          git tag v${{ github.event.inputs.release_version }}
+          git commit -m "chore(release): version ${{ steps.release_version.outputs.release_version }}" || true
+          git tag v${{ steps.release_version.outputs.release_version }}
           git push origin HEAD
-          git push origin v${{ github.event.inputs.release_version }}
+          git push origin v${{ steps.release_version.outputs.release_version }}
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.event.inputs.release_version }}
+          tag_name: v${{ steps.release_version.outputs.release_version }}
           files: target/*.jar
           body_path: RELEASE_NOTES.md
 

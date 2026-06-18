@@ -2,14 +2,10 @@
 
 ## Highlights
 
-- hi di hi do, je code comme un mongolien pour tester des features débiles de cette saloperie microsoft/github
-- fuck them
-- ansonnsten alles gut, und selbst?
-
-## Artifact
-
-- `hello-cli-<version>.jar`
+- Automatic release number using the project.version in pom.xml (without -SNAPSHOT)
+- Release number can be overrided on the workflow displatch (release_number field)
+- Next release number is free to choose
 
 ## Ta mère !
 
-La truie
+C'est toujours une truie
